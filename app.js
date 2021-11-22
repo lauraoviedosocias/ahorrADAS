@@ -16,13 +16,14 @@ const vistaOperacionesTitulos = document.querySelector("#vista-operaciones-titul
 const vistaSinOperaciones = document.querySelector("#sin-operaciones")
 
 const CARD_NUEVA_OPERACION = document.querySelector("#form-nueva-operacion")
-const SELECT_CATEGORIAS = document.querySelector("#select-de-categorias")
 const LISTA_CATEGORIAS = document.querySelector(".lista-categorias")
+const SELECT_CATEGORIAS = document.querySelector("#select-de-categorias")
+const CARD_AGREGAR_CATEGORIAS =document.querySelector("#agregar-nuevas-categorias")
+const FORM_AGREGAR_CATEGORIAS=document.querySelector("#form-agregar-categorias")
 const CARD_EDITAR_CATEGORIAS = document.querySelector("#editar-categoria")
 const INPUT_EDITAR_CATEGORIAS = document.querySelector("#editar-categoria-input")
-const CANCELAR_EDITAR_CAT = document.querySelector("#cancelar-categoria-boton")
 const EDITAR_CATEGORIA = document.querySelector("#editar-categoria-boton")
-const CARD_AGREGAR_CATEGORIAS =document.querySelector("#agregar-nuevas-categorias")
+const CANCELAR_EDITAR_CAT = document.querySelector("#cancelar-categoria-boton")
 
 
 const INPUT_DESCRIPCION = document.querySelector("#descripcion-input")
@@ -30,7 +31,6 @@ const MONTO_INPUT = document.querySelector("#monto-input")
 const TIPO_INPUT = document.querySelector("#editar-tipo-operacion")
 const FECHA_INPUT = document.querySelector("#editar-fecha-input")
 
-const formAgregarCategorias=document.querySelector("#form-agregar-categorias")
 
 //FUNCIONES BASICAS PARA NAVEGAR LA WEB
 BTN_BALANCE.onclick = () => {
@@ -77,20 +77,6 @@ BTN_NUEVA_OPERACION.onclick = () => {
     CARD_REPORTES.classList.add("is-hidden")
 }
 
-formAgregarCategorias.onsubmit = (e) => {
-    e.preventDefault()
-    const nuevaCategoria = INPUT_CATEGORIAS.value
-    const categorias = obtenerCategorias()
-   if (categorias.indexOf(nuevaCategoria) === -1){
-    categorias.push(nuevaCategoria)
-    INPUT_CATEGORIAS.value = ""
-
-    guardarEnLocalStorage("categorias", categorias)
-    agregarCategoriasAlSelect()
-    agregarCategoriasAHTML()
-   }
-    
-}
 
 //CATEGORIAS EXISTENTES
 const categorias = ["Comida", "Servicios", "Salidas", "Educacion", "Transporte", "Trabajo"]
@@ -112,6 +98,21 @@ const obtenerCategorias = () => {
     }
 }
 
+FORM_AGREGAR_CATEGORIAS.onsubmit = (e) => {
+    e.preventDefault()
+    const nuevaCategoria = INPUT_CATEGORIAS.value
+    const categorias = obtenerCategorias()
+    
+   if (categorias.indexOf(nuevaCategoria) === -1){
+    categorias.push(nuevaCategoria)
+    INPUT_CATEGORIAS.value = ""
+
+    guardarEnLocalStorage("categorias", categorias)
+    agregarCategoriasAlSelect()
+    agregarCategoriasAHTML()
+   }
+    
+}
 const agregarCategoriasAlSelect = () => {
     const categorias = obtenerCategorias()
     const categoriasString = categorias.reduce((acc, categoria) => {
@@ -127,23 +128,21 @@ const agregarCategoriasAHTML = () => {
 
     const categoriasAHTML = categorias.reduce((acc, categoria, index) => {
         return acc + `
+            <div class="columns ">
 
-        <div class="columns ">
+                <div class="column is-9">
+                    <p class="tag is-primary is-light "> ${categoria} </p>
+                </div>
+                <div class="column is-1 has-text-right">
+                    <button onclick="editarCategoria('${categoria}')" id="editar-categorias-${index}" class="button is-ghost is-size-7 m-0">Editar</button>
+                </div>
 
-            <div class="column is-9">
-                <p class="tag is-primary is-light "> ${categoria} </p>
+                <div class="column is-2 ">
+                    <button  onclick="eliminarCategoria('${categoria}')" id="eliminar-categorias-${index}" class="button is-ghost  is-size-7">Eliminar</button>
+                </div>
+
             </div>
-            <div class="column is-1 has-text-right">
-                <button onclick="editarCategoria('${categoria}')" id="editar-categorias-${index}" class="button is-ghost is-size-7 m-0">Editar</button>
-            </div>
-
-            <div class="column is-2 ">
-                <button  onclick="eliminarCategoria('${categoria}')" id="eliminar-categorias-${index}" class="button is-ghost  is-size-7">Eliminar</button>
-            </div>
-
-        </div>
-
-       `
+         `
     }, "")
 
     LISTA_CATEGORIAS.innerHTML = categoriasAHTML;
@@ -166,15 +165,17 @@ const editarCategoria = (categoria) => {
 
         e.preventDefault()
         const categorias = obtenerCategorias()
-        if (categorias.indexOf(INPUT_EDITAR_CATEGORIAS.value) ===-1 || categoria === INPUT_EDITAR_CATEGORIAS.value){
-        const indice = categorias.indexOf(categoria)
-        categorias[indice] = INPUT_EDITAR_CATEGORIAS.value
-        guardarEnLocalStorage("categorias", categorias)
-        agregarCategoriasAHTML()
-        CARD_EDITAR_CATEGORIAS.classList.add("is-hidden")
-        CARD_AGREGAR_CATEGORIAS.classList.remove("is-hidden")
-        LISTA_CATEGORIAS.classList.remove("is-hidden")
-    }
+        if (categorias.indexOf(INPUT_EDITAR_CATEGORIAS.value) ===-1 ||
+            categoria === INPUT_EDITAR_CATEGORIAS.value) {
+
+            const indice = categorias.indexOf(categoria)
+            categorias[indice] = INPUT_EDITAR_CATEGORIAS.value
+            guardarEnLocalStorage("categorias", categorias)
+            agregarCategoriasAHTML()
+            CARD_EDITAR_CATEGORIAS.classList.add("is-hidden")
+            CARD_AGREGAR_CATEGORIAS.classList.remove("is-hidden")
+            LISTA_CATEGORIAS.classList.remove("is-hidden")
+        }
     }
 }
 
